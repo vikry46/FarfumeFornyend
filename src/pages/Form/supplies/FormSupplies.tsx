@@ -3,19 +3,26 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import FormSuppliesBody from './FormSuppliesBody';
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 
 interface Supplie{
   id: number;
   nama: string;
   kode_barang: string;
-  total_all: string;
+  total_masuk: number;
+  jumlah_all:number;
+  tanggal: string;
 }
 
 
 const FormSupplies =() =>{
   const [supplies, setSupplies] = useState<Supplie[]>([]); 
   const [searchTerm, setSearchTerm] = useState('');
+
+    // Menentukan apakah halaman "Form Input Supplies" sedang aktif
+    const location = useLocation();
+    const isSupplieActive = location.pathname.startsWith("/form-supplies") || location.pathname.startsWith("/form-input-supplies");
 
   const handleDelete = async (id:number)=>{
     const isConfirmed= window.confirm("Apa anda yakin ingin menghapus data ini !!!    / Pastikan lagi sebelum menghapus ")
@@ -26,8 +33,8 @@ const FormSupplies =() =>{
       await axios.delete(`http://127.0.0.1:8000/api/suplly/delete/${id}`)
       setSupplies((prevSupplies)=> prevSupplies.filter((supplies)=>supplies.id !==id));
       alert("Data Berhasil di hapus.");
-    } catch (eror){
-      console.log("Gagal menghapus data:",eror);
+    } catch (error){
+      console.log("Gagal menghapus data:",error);
       alert("Gagal menghapus data")
     }
   }
@@ -56,7 +63,9 @@ const FormSupplies =() =>{
               Data Supplies
             </h3>
             <Link to="/form-input-supplies"
-            className='rounded border border-stroke py-2 px-4 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-primary'>
+              className={`rounded border border-stroke py-2 px-4 font-medium hover:shadow-1 dark:border-strokedark dark:text-primary 
+                ${isSupplieActive ? "text-white" : "text-black"}`}
+            >
             Tambah data
             </Link>
           </div>
@@ -76,7 +85,7 @@ const FormSupplies =() =>{
                   <th className='min-w-[1cm] py-4 px-4 font-medium text-black dark:text-white xl:pl-11'>No</th>
                   <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">Nama Stock</th>
                   <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">Kode Stock</th>
-                  <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Jumlah Stock</th>
+                  <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Total Stock Semua Market</th>
                   <th className="py-4 px-4 font-medium text-black dark:text-white">Actions</th>
                 </tr>
               </thead>

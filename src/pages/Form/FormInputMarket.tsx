@@ -17,8 +17,9 @@ const FormInputMarket: React.FC<FormMarketProps> = ({ onMarketAdded }) => {
   const [nama, setNama] = useState("");
   const [kodeCabang, setKodeCabang] = useState("");
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate(); // penggunaan useNavigate untuk redirect
+
+  // menumukan set aktiv untuk sitedebar
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +40,7 @@ const FormInputMarket: React.FC<FormMarketProps> = ({ onMarketAdded }) => {
 
         // Redirect ke halaman utama 
         navigate("/form-market");
-      }
+      }   
     } catch (error) {
       console.error("Gagal menambahkan data:", error);
       alert("Gagal menambahkan data!");

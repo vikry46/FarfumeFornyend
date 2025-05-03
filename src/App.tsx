@@ -25,6 +25,18 @@ import Index from './pages/Home/Index';
 import HomeEcommerceLayout from './HomeEcommerceLayout'
 import AuthLayout from './AuthLayout';
 import FormKariawan from './pages/Form/kariawan.tsx/FormKariawan';
+import FormInputKariawan from './pages/Form/kariawan.tsx/FormInputKariawan';
+import FormEditKariawan from './pages/Form/kariawan.tsx/FormEditKariawan';
+import FormPengiriman from './pages/Form/Pengiriman/FormPengiriman';
+import FormInputPengiriman from './pages/Form/Pengiriman/FormInputPengiriman';
+import FormEditPengiriman from './pages/Form/Pengiriman/FormEditPengiriman';
+import FormPenjualan from './pages/Form/Penjualan/FormPenjualan';
+import FormInputPenjualan from './pages/Form/Penjualan/FormInputPenjualan';
+import FormEditPenjualan from './pages/Form/Penjualan/FormEditPenjulan';
+import FormStock from './pages/Form/StokMarket/FormStock';
+import FormBarangMasuk from './pages/Form/BrangMasuk/FormBarangMasuk';
+import FormInputBarangMasuk from './pages/Form/BrangMasuk/FormInputBarangMasuk';
+import FormEditBarangMasuk from './pages/Form/BrangMasuk/FormEditBarangMasuk';
 
 
 interface Market {
@@ -37,21 +49,82 @@ interface Supplie {
   id: number;
   nama: string;
   kode_barang: string;
-  total_all: string;
+}
+
+interface Kariawan{
+  id:number
+  nik:string
+  nama:string
+  kelamin:string
+  jabatan:string
+}
+
+interface Pengiriman {
+  id: number;
+  id_market: number;
+  id_supplie: number;
+  jumlah_kirim: number;
+  tanggal: string;
+  market?: {
+      id: number;
+      nama: string;
+  };
+  supplie?: {
+      id: number;
+      nama: string;
+  };
+}
+interface Penjualan {
+  id: number;
+  id_market: number;
+  id_supplie: number;
+  terjual: number;
+  tanggal: string;
+  market?: {
+      id: number;
+      nama: string;
+  };
+  supplie?: {
+      id: number;
+      nama: string;
+  };
+}
+interface BarangMasuk{
+  id:number;
+  id_supplie:number;
+  juml_masuk:number;
+  tanggal_masuk:string;
 }
 
 
 function App() {
   const [markets, setMarkets] = useState<Market[]>([]);
+  const [barangMasuk, setBarangMasuk] = useState<BarangMasuk[]>([]);
   const [supplies, setSupplies] = useState<Supplie[]>([]);
+  const [kariawan, setKariawan] = useState<Kariawan[]>([]);
+  const [pengiriman, setPengiriman] = useState<Pengiriman[]>([]);
+  const [penjualan, setPenjualan] = useState<Penjualan[]>([]);
 
   // Fungsi untuk menangani penambahan market baru
   const handleMarketAdded = (newMarket: Market) => {
     setMarkets((prevMarkets) => [...prevMarkets, newMarket]);
   };
+  const handleBarangMasukAdded = (newBarangMasuk: BarangMasuk) => {
+    setBarangMasuk((prevBarangMasuk) => [...prevBarangMasuk, newBarangMasuk]);
+  };
   
   const handleSuppliesAdded = (newSupplies: Supplie) => {
     setSupplies((prevSupplies) => [...prevSupplies, newSupplies]);
+  }
+
+  const handleKariawanAdded = (newKariawan : Kariawan)=>{
+    setKariawan((prevKariawan) => [...prevKariawan, newKariawan]);
+  }
+  const handlePengirimanAdded = (newPengiriman : Pengiriman)=>{
+    setPengiriman((prevPengiriman) => [...prevPengiriman, newPengiriman]);
+  }
+  const handlePenjualanAdded = (newPenjualan : Penjualan)=>{
+    setPenjualan((prevPenjualan) => [...prevPenjualan, newPenjualan]);
   }
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -64,6 +137,22 @@ function App() {
   useEffect(() => {
     console.log("Current supplies:", supplies);
   }, [supplies]);
+
+  useEffect(() => {
+    console.log("Current barangMAsuk:", barangMasuk);
+  }, [barangMasuk]);
+
+  useEffect(()=>{
+    console.log("Current market", kariawan)
+  },[kariawan])
+
+  useEffect(()=>{
+    console.log("Current pengiriman", pengiriman)
+  },[pengiriman])
+
+  useEffect(()=>{
+    console.log("Current penjualan", penjualan)
+  },[penjualan])
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -202,7 +291,7 @@ function App() {
               path="/form-input-supplies"
               element={
                 <>
-                  <PageTitle title="Form supplies" />
+                  <PageTitle title="Form input supplies" />
                   <FormInputSupplies onSuppliesAdded={handleSuppliesAdded}/>
                 </>
               }
@@ -225,8 +314,126 @@ function App() {
                 </>
               }
             />
-          </Routes>
-          
+            <Route
+              path="/form-input-kariawan"
+              element={
+                <>
+                  <PageTitle title="Form input kariawan" />
+                  <FormInputKariawan onKariawanAdded={handleKariawanAdded}/>
+                </>
+              }
+            />
+            <Route
+              path="/form-edit-kariawan/:id"
+              element={
+                <>
+                  <PageTitle title="Form edit kariawan" />
+                  <FormEditKariawan/>
+                </>
+              }
+            />
+            <Route
+              path="/form-pengiriman"
+              element={
+                <>
+                  <PageTitle title="Form pengiriaman" />
+                  <FormPengiriman/>
+                </>
+              }
+            />
+            <Route
+              path="/form-input-pengiriman"
+              element={
+                <>
+                  <PageTitle title="Form input pengiriaman" />
+                  <FormInputPengiriman 
+                    onPengirimanAdded={handlePengirimanAdded}
+                    markets={markets}
+                    supplies={supplies}
+                  />
+                </>
+              }
+            />
+            <Route
+              path="/form-edit-pengiriman/:id"
+              element={
+                <>
+                  <PageTitle title="Form edit pengiriman" />
+                  <FormEditPengiriman/>
+                </>
+              }
+            />
+             <Route
+              path="/form-penjualan"
+              element={
+                <>
+                  <PageTitle title="Form penjualan" />
+                  <FormPenjualan/>
+                </>
+              }
+            />
+            <Route
+              path="/form-input-penjualan"
+              element={
+                <>
+                  <PageTitle title="Form input penjualan" />
+                  <FormInputPenjualan
+                    onPenjualanAdded={handlePenjualanAdded}
+                    markets={markets}
+                    supplies={supplies}
+                  />
+                </>
+              }
+            />
+           <Route
+              path="/form-edit-penjualan/:id"
+              element={
+                <>
+                  <PageTitle title="Form edit penjualan" />
+                  <FormEditPenjualan/>
+                </>
+              }
+            />
+            <Route
+              path="/form-stockproduk"
+              element={
+                <>
+                  <PageTitle title="Form stock produk" />
+                  <FormStock/>
+                </>
+              }
+            />
+            <Route
+              path="/form-barang-masuk"
+              element={
+                <>
+                  <PageTitle title="Form barang masuk" />
+                  <FormBarangMasuk/>
+                </>
+              }
+            />
+            <Route
+              path="/form-input-barang-masuk"
+              element={
+                <>
+                  <PageTitle title="Form input barang masuk" />
+                  <FormInputBarangMasuk
+                    onBarangMasukAdded={handleBarangMasukAdded}
+                    supplies={supplies}
+                  />
+                </>
+              }
+            />
+              <Route
+              path="/form-edit-barang-masuk/:id"
+              element={
+                <>
+                  <PageTitle title="Form edit barang masuk" />
+                  <FormEditBarangMasuk/>
+                </>
+              }
+            />
+          </Routes>  
         </DefaultLayout>
         } />
       )}

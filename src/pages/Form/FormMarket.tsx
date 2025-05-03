@@ -3,6 +3,7 @@ import axios from 'axios';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import FormMarketBody from './FormMarketBody';
 import { Link } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
 
 // Mendefinisikan tipe data Market yang sesuai dengan struktur data dari API
@@ -17,6 +18,10 @@ const FormMarket = () => {
   const [markets, setMarket] = useState<Market[]>([]); // Menyatakan bahwa markets adalah array dari objek Market
   // untuk mencari data berdasarkan nama
   const [searchTerm, setSearchTerm] = useState('');
+
+
+  const location = useLocation();
+  const isInputActive = location.pathname === "/form-input-market";
 
   const handleDelete = async (id: number) => {
     const isConfirmed= window.confirm("Apa anda yakin akan menghapus data ini !!!   / Pastikan lagi sebelum menghapus. ");
@@ -62,9 +67,18 @@ const FormMarket = () => {
               <label className='mb-3 block text-black dark:text-white text-center'>
                 Data Market
               </label>
-              <Link to="/form-input-market" className="rounded border border-stroke py-2 px-3 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-primary">
+              {/* penggunaan link yg gk pakai set aktiv */}
+              {/* <Link to="/form-input-market" className="rounded border border-stroke py-2 px-3 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-primary">
                 Tambah Data
-              </Link>
+              </Link> */}
+
+              {/* penggunakan link pakai set aktiv */}
+              <Link to="/form-input-market"
+                className={`rounded border border-stroke py-2 px-4 font-medium hover:shadow-1 dark:border-strokedark dark:text-primary 
+                ${isInputActive ? "bg-primary text-white" : "text-black"}`}
+                >
+                Tambah data
+             </Link>
             </ol>
           </div>
           <div className='p-4'>
@@ -100,7 +114,8 @@ const FormMarket = () => {
                 {
                   //tanpa menggunukan input pencarian
                   // markets && markets.map((market,index) => (
-
+                  // <FormMarketBody key={market.id}  market={market} index={index}/>
+                  
                   // jika ada menu pencaharian
                     filteredMarkets.map((market, index) => (
                     <FormMarketBody key={market.id} market={market} index={index} onDelete={handleDelete} /> // Mengirimkan market ke FormMarketBody

@@ -7,7 +7,6 @@ interface Supplie{
     id:number;
     nama:string;
     kode_barang:string;
-    total_all:string;
 }
 
 interface FormInputSuppliesProps{
@@ -18,9 +17,15 @@ interface FormInputSuppliesProps{
 const FormInputSupplies:React.FC<FormInputSuppliesProps>=({onSuppliesAdded})=>{
     const[nama, setNama]= useState("");
     const[kodeBarang, setKodeBarang]= useState("");
-    const[totalAll, setTotalAll]= useState("");
     const[loading, setLoading]=useState(false);
     const navigate= useNavigate();
+
+
+    
+
+    // Menentukan halaman aktif untuk sidebar
+    const isSupplieActive = location.pathname.startsWith("/form-input-supplies");    
+
 
     const handleSubmit = async (e: React.FormEvent)=>{
         e.preventDefault();
@@ -30,7 +35,6 @@ const FormInputSupplies:React.FC<FormInputSuppliesProps>=({onSuppliesAdded})=>{
             const response =await axios.post("http://localhost:8000/api/suplly/store",{
                 nama,
                 kode_barang : kodeBarang,
-                total_all : totalAll,
             });
 
             if(response.status===201){
@@ -38,7 +42,6 @@ const FormInputSupplies:React.FC<FormInputSuppliesProps>=({onSuppliesAdded})=>{
             onSuppliesAdded(newSupplies);
             setNama("");
             setKodeBarang("");
-            setTotalAll("");
             alert("Data Berhasil Ditambahkan");
 
             //redirect data ke halaman utama
@@ -66,7 +69,9 @@ const FormInputSupplies:React.FC<FormInputSuppliesProps>=({onSuppliesAdded})=>{
                     </h3>
                     <br />
                     <Link to="/form-supplies"
-                    className="rounded border border-stroke py-2 px-4 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-primary">
+                    className={`rounded border border-stroke py-2 px-4 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-primary
+                    ${isSupplieActive ? " text-white" : "text-black"
+                    }`}>
                     Kembali
                     </Link>
                 </div>
@@ -95,19 +100,6 @@ const FormInputSupplies:React.FC<FormInputSuppliesProps>=({onSuppliesAdded})=>{
                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                             value={kodeBarang}
                             onChange={(e)=>setKodeBarang(e.target.value)}
-                            required
-                            />
-                        </div>
-                        <div className="mb-4.5">
-                            <label className="mb-2.5 block text-black dark:text-white">
-                                Total All
-                            </label>
-                            <input 
-                            type="text" 
-                            placeholder="Masukan Total Keseluruhan Barang"
-                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                            value={totalAll}
-                            onChange={(e)=>setTotalAll(e.target.value)}
                             required
                             />
                         </div>
