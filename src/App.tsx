@@ -37,6 +37,7 @@ import FormStock from './pages/Form/StokMarket/FormStock';
 import FormBarangMasuk from './pages/Form/BrangMasuk/FormBarangMasuk';
 import FormInputBarangMasuk from './pages/Form/BrangMasuk/FormInputBarangMasuk';
 import FormEditBarangMasuk from './pages/Form/BrangMasuk/FormEditBarangMasuk';
+import ProtectedRoute from './components/Protected/ProtectedRoute';
 
 
 interface Market {
@@ -177,6 +178,7 @@ function App() {
         <Route path="/home-ecomerse" element={<HomeEcommerceLayout><Index /></HomeEcommerceLayout>} />
       ) : (
         <Route path="/*" element={
+          <ProtectedRoute>
           <DefaultLayout>
           <Routes>
             <Route
@@ -435,6 +437,7 @@ function App() {
             />
           </Routes>  
         </DefaultLayout>
+         </ProtectedRoute>
         } />
       )}
     </Routes>
