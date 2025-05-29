@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import axios from '../../utils/axiosInstance';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import FormMarketBody from './FormMarketBody';
 import { Link } from 'react-router-dom';
@@ -30,7 +31,7 @@ const FormMarket = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:8000/api/market/delete/${id}`); // Kirim request ke API
+      await axios.delete(`/api/market/delete/${id}`); // Kirim request ke API
       setMarket((prevMarkets) => prevMarkets.filter((market) => market.id !== id)); // Hapus dari state
       alert("Data berhasil di hapus.");
     } catch (error) {
@@ -40,7 +41,7 @@ const FormMarket = () => {
   };
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/market')
+    axios.get('/api/market')
       .then(function(response) {
         // untuk cek data di response
         // console.log(response)

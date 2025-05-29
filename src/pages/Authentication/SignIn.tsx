@@ -1,52 +1,31 @@
 import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
+import { useState, } from 'react';
+import { useAuth } from '../../AuthProvider'; 
 
+
+
+// Komponen SignIn
 const SignIn: React.FC = () => {
-  const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setIsLoading(true);
 
-try {
-      // 1. Ambil CSRF token cookie dari Sanctum
-      await fetch('http:/127.0.0.1:8000/sanctum/csrf-cookie', {
-        credentials: 'include',
-      });
-
-      // 2. Kirim POST login ke Laravel API
-      const response = await fetch('http://127.0.0.1:8000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        credentials: 'include', // Ini penting untuk kirim cookie
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || 'Login gagal');
-        return;
-      }
-
-      // 3. Opsional: Simpan status login di localStorage atau context
-      localStorage.setItem('user', JSON.stringify(data.user)); // sesuaikan dengan response Laravel kamu
-
-      // 4. Arahkan ke dashboard
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Terjadi kesalahan saat login');
+    try {
+      await login(email, password);
+      console.log('Login berhasil! Redirecting...');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err.message || 'Terjadi kesalahan saat login');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -271,12 +250,15 @@ try {
                 )}
 
                 <div className="mb-5">
-                  <button
-                    type="submit"
-                    className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
-                  >
-                    Login
-                  </button>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className={`w-full cursor-pointer rounded-lg border border-primary p-4 text-white transition ${
+                    isLoading ? 'bg-opacity-70 cursor-not-allowed' : 'bg-primary hover:bg-opacity-90'
+                  }`}
+                >
+                  {isLoading ? 'Loading...' : 'Login'}
+                </button>
                 </div>
 
                 <div className="mt-6 text-center">

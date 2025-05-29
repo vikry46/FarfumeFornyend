@@ -1,10 +1,11 @@
 import PageTitle from './components/PageTitle';
+import { Outlet } from 'react-router-dom';
 
-const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+const AuthLayout = () => {
   return (
     <>
       <PageTitle title="Authentication" />
-      {children}
+      <Outlet />
     </>
   );
 };
