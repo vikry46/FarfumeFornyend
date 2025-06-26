@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
-import axios from "axios";
+import axios from "../../../utils/axiosInstance";
 import React, { useState, useEffect } from "react";
 
 // Interface tambahan
@@ -39,51 +39,49 @@ const FormEditPengiriman = () => {
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        const [pengirimanRes, marketRes, supplieRes] = await Promise.all([
-          axios.get(`http://localhost:8000/api/pengiriman/show/${id}`),
-          axios.get("http://localhost:8000/api/market"),
-          axios.get("http://localhost:8000/api/supllies"),
-        ]);
+useEffect(() => {
+  const fetchAllData = async () => {
+    try {
+      const [pengirimanRes, marketRes, supplieRes] = await Promise.all([
+        axios.get(`/api/pengiriman/show/${id}`),
+        axios.get("/api/market"),
+        axios.get("/api/supllies"),
+      ]);
 
-        console.log('Pengiriman Response:', pengirimanRes.data);
-        console.log('Market Response:', marketRes.data);
-        console.log('Supplies Response:', supplieRes.data);
+      console.log('Pengiriman Response:', pengirimanRes.data);
+      console.log('Market Response:', marketRes.data);
+      console.log('Supplies Response:', supplieRes.data);
 
-        const marketsData = marketRes.data.data || marketRes.data;
-        const suppliesData = supplieRes.data.data || supplieRes.data;
-        const allPengiriman = pengirimanRes.data.data || pengirimanRes.data;
+      const marketsData = marketRes.data.data || marketRes.data;
+      const suppliesData = supplieRes.data.data || supplieRes.data;
+      const pengirimanData = pengirimanRes.data.data || pengirimanRes.data;
 
-        const pengirimanData = allPengiriman.find((item: Pengiriman & { id: string }) => item.id === id);
-
-        if (!pengirimanData) {
-          throw new Error("Data pengiriman tidak ditemukan");
-        }
-
-        setMarkets(marketsData);
-        setSupplies(suppliesData);
-
-        setFormData({
-          id_market: pengirimanData.id_market?.toString() || "",
-          id_supplie: pengirimanData.id_supplie?.toString() || "",
-          jumlah_kirim: pengirimanData.jumlah_kirim?.toString() || "",
-          tanggal: formatDateForInput(pengirimanData.tanggal) || ""
-        });
-
-      } catch (error) {
-        console.error("Gagal mengambil data:", error);
-        setError("Gagal memuat data pengiriman. Silakan coba lagi.");
-      } finally {
-        setIsFetching(false);
+      if (!pengirimanData) {
+        throw new Error("Data pengiriman tidak ditemukan");
       }
-    };
 
-    if (id) {
-      fetchAllData();
+      setMarkets(marketsData);
+      setSupplies(suppliesData);
+
+      setFormData({
+        id_market: pengirimanData.id_market?.toString() || "",
+        id_supplie: pengirimanData.id_supplie?.toString() || "",
+        jumlah_kirim: pengirimanData.jumlah_kirim?.toString() || "",
+        tanggal: formatDateForInput(pengirimanData.tanggal) || ""
+      });
+
+    } catch (error) {
+      console.error("Gagal mengambil data:", error);
+      setError("Gagal memuat data pengiriman. Silakan coba lagi.");
+    } finally {
+      setIsFetching(false);
     }
-  }, [id]);
+  };
+
+  if (id) {
+    fetchAllData();
+  }
+}, [id]);
 
   const formatDateForInput = (dateString: string | undefined) => {
     if (!dateString) return "";
@@ -110,7 +108,8 @@ const FormEditPengiriman = () => {
     setError(null);
 
     try {
-      await axios.patch(`http://localhost:8000/api/pengiriman/update/${id}`, {
+      await axios.get("/sanctum/csrf-cookie");
+      await axios.patch(`/api/pengiriman/update/${id}`, {
         id_market: formData.id_market,
         id_supplie: formData.id_supplie,
         jumlah_kirim: formData.jumlah_kirim,

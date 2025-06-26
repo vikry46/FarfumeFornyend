@@ -1,7 +1,8 @@
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../../utils/axiosInstance";
+import axiosEror from "axios";
 
 interface Penjualan {
   id: number;
@@ -35,6 +36,10 @@ interface Supplie {
 
 }
 
+interface UkuranBotol {
+  ukuran_botol: number;
+}
+
 interface FormInputPenjualanProps {
   onPenjualanAdded: (penjualan: Penjualan) => void;
   markets: Market[];
@@ -53,18 +58,21 @@ const FormInputPenjualan: React.FC<FormInputPenjualanProps> = ({ onPenjualanAdde
   const [harga, setHarga] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [ukuranBotolList, setUkuranBotolList] = useState<UkuranBotol[]>([]);
 
   const estimasiBotol = ukuranBotol && terjual ? Math.floor(Number(terjual) / Number(ukuranBotol)) : 0;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [marketRes, supplieRes] = await Promise.all([
-          axios.get("http://localhost:8000/api/market"),
-          axios.get("http://localhost:8000/api/supllies"),
+        const [marketRes, supplieRes, ukuranRes] = await Promise.all([
+          axios.get("/api/market"),
+          axios.get("/api/supllies"),
+          axios.get("/api/ukuran-botol"),
         ]);
         setMarkets(marketRes.data.data);
         setSupplies(supplieRes.data.data);
+        setUkuranBotolList(ukuranRes.data.data);
       } catch (error) {
         console.error("Gagal mengambil data:", error);
       }
@@ -77,7 +85,7 @@ const FormInputPenjualan: React.FC<FormInputPenjualanProps> = ({ onPenjualanAdde
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8000/api/penjualan/store", {
+      const response = await axios.post("/api/penjualan/store", {
         id_market: idMarket,
         id_supplie: idSupplie,
         terjual: Number(terjual),
@@ -99,10 +107,16 @@ const FormInputPenjualan: React.FC<FormInputPenjualanProps> = ({ onPenjualanAdde
         alert("Data Penjualan Berhasil Ditambahkan");
         navigate("/form-penjualan");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gagal menambahkan data:", error);
-      alert("Gagal menambahkan data!");
-    } finally {
+      if (axiosEror.isAxiosError(error) && error.response) {
+        const msg = error.response.data.message;
+        alert(msg || "Gagal menambahkan data!");
+      } else {
+        alert("Terjadi kesalahan saat menyimpan data.");
+      }
+    }
+    finally {
       setLoading(false);
     }
   };
@@ -180,10 +194,13 @@ const FormInputPenjualan: React.FC<FormInputPenjualanProps> = ({ onPenjualanAdde
                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black dark:border-form-strokedark dark:bg-form-input dark:text-white"
               >
                 <option value="">-- Pilih Ukuran Botol --</option>
-                <option value="50">50 ml</option>
-                <option value="100">100 ml</option>
-                <option value="200">200 ml</option>
+                {ukuranBotolList.map((item, index) => (
+                  <option key={index} value={item.ukuran_botol}>
+                    {item.ukuran_botol} ml
+                  </option>
+                ))}
               </select>
+
             </div>
 
             <div className="mb-4.5">

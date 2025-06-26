@@ -1,7 +1,10 @@
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import { useState } from "react";
-import axios from "axios";
+import axios from '../../utils/axiosInstance';
 import { Link, useNavigate } from "react-router-dom";
+import { AxiosError } from 'axios';
+
+
 
 interface Market {
   id: number;
@@ -21,33 +24,42 @@ const FormInputMarket: React.FC<FormMarketProps> = ({ onMarketAdded }) => {
 
   // menumukan set aktiv untuk sitedebar
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const response = await axios.post("http://localhost:8000/api/market/store", {
-        nama,
-        kode_cabang: kodeCabang,
-      });
+  try {
+    // Gunakan axiosInstance yang sama untuk CSRF dan request
+    await axios.get('/sanctum/csrf-cookie');
+    
+    const response = await axios.post("/api/market/store", {
+      nama,
+      kode_cabang: kodeCabang,
+    });
 
-      if (response.status === 201) {
-        const newMarket = response.data.data;
-        onMarketAdded(newMarket); // menambahkan data baru ke daftar market
-        setNama(""); // Reset form
-        setKodeCabang("");
-        alert("Data berhasil ditambahkan!");
-
-        // Redirect ke halaman utama 
-        navigate("/form-market");
-      }   
-    } catch (error) {
-      console.error("Gagal menambahkan data:", error);
-      alert("Gagal menambahkan data!");
-    } finally {
-      setLoading(false);
+    if (response.status === 201) {
+      const newMarket = response.data.data;
+      onMarketAdded(newMarket);
+      setNama("");
+      setKodeCabang("");
+      alert("Data berhasil ditambahkan!");
+      navigate("/form-market");
+    }   
+  } catch (error) {
+    console.error("Gagal menambahkan data:", error);
+    
+    // Debug lebih detail
+    if (error instanceof AxiosError) {
+      console.error("Response data:", error.response?.data);
+      console.error("Response status:", error.response?.status);
+      console.error("Response headers:", error.response?.headers);
     }
-  };
+    
+    alert("Gagal menambahkan data!");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <>

@@ -1,7 +1,8 @@
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../../utils/axiosInstance";
+import { AxiosError } from 'axios';
 
 // Interface untuk data pengiriman
 interface BarangMasuk {
@@ -40,7 +41,7 @@ const FormInputBarangMasuk: React.FC<FormInputPengirimanProps> = ({ onBarangMasu
         const fetchData = async () => {
             try {
                 const [ supplieRes] = await Promise.all([
-                    axios.get("http://localhost:8000/api/supllies"),
+                    axios.get("/api/supllies"),
                 ]);
 
     
@@ -58,7 +59,7 @@ const FormInputBarangMasuk: React.FC<FormInputPengirimanProps> = ({ onBarangMasu
         setLoading(true);
 
         try {
-            const response = await axios.post("http://localhost:8000/api/barang-masuk/store", {
+            const response = await axios.post("/api/barang-masuk/store", {
                 id_supplie: idSupplie,
                 juml_masuk: jumlMasuk,
                 tanggal_masuk: tanggal,
@@ -74,7 +75,7 @@ const FormInputBarangMasuk: React.FC<FormInputPengirimanProps> = ({ onBarangMasu
                 navigate("/form-barang-masuk");
             }
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (error instanceof AxiosError){
                 console.error("Gagal menambahkan data:", error.response?.data);
             } else {
                 console.error("Unexpected Error:", error);

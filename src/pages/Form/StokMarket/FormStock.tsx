@@ -1,7 +1,6 @@
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import axios from "../../../utils/axiosInstance";
 import FormStockBody from "./FormStockBody";
 
 interface Produk {
@@ -20,7 +19,7 @@ const FormStock = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8000/api/stok-market");
+      const response = await axios.get("/api/stok-market");
       setStockList(response.data.data);
       setLoading(false);
     } catch (err) {

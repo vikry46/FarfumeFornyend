@@ -1,6 +1,6 @@
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../../utils/axiosInstance'; 
 import { useEffect, useState } from 'react';
 import FormPengirimanBody from './FormPengirimanBody';
 
@@ -34,7 +34,7 @@ const FormPengiriman = () => {
     if (!isConfirmed) return;
 
     try {
-      await axios.delete(`http://localhost:8000/api/pengiriman/delete/${id}`);
+      await axios.delete(`/api/pengiriman/delete/${id}`);
       setPengiriman(prev => prev.filter(item => item.id !== id));
       alert("Data Berhasil dihapus.");
     } catch (error) {
@@ -46,7 +46,7 @@ const FormPengiriman = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/pengiriman');
+         const response = await axios.get('/api/pengiriman');
         console.log('Response API:', response.data);
         setPengiriman(response.data.data);
         setLoading(false);

@@ -39,11 +39,19 @@ import FormBarangMasuk from './pages/Form/BrangMasuk/FormBarangMasuk';
 import FormInputBarangMasuk from './pages/Form/BrangMasuk/FormInputBarangMasuk';
 import FormEditBarangMasuk from './pages/Form/BrangMasuk/FormEditBarangMasuk';
 import ProtectedRoute from './components/Protected/ProtectedRoute';
+import FormUkuranBotol from './pages/Form/UkuranBotol/FormUkuranBotol';
+import FormInputUkuranBotol from './pages/Form/UkuranBotol/FormInputUkuranBotol';
+import FormEditUkuranBotol from './pages/Form/UkuranBotol/FormEditUkuranBotol';
+import FormStokGudang from './pages/Form/Gudang/FormStokGudang';
 
 interface Market {
   id: number;
   nama: string;
   kode_cabang: string;
+}
+interface UkuranBotol {
+  id: number;
+  ukuran_botol: string;
 }
 
 interface Supplie {
@@ -101,6 +109,7 @@ interface BarangMasuk{
 
 function App() {
   const [markets, setMarkets] = useState<Market[]>([]);
+  const [ukuranBotol, setukuranBotol] = useState<UkuranBotol[]>([]);
   const [barangMasuk, setBarangMasuk] = useState<BarangMasuk[]>([]);
   const [supplies, setSupplies] = useState<Supplie[]>([]);
   const [kariawan, setKariawan] = useState<Kariawan[]>([]);
@@ -110,6 +119,10 @@ function App() {
   // Fungsi untuk menangani penambahan market baru
   const handleMarketAdded = (newMarket: Market) => {
     setMarkets((prevMarkets) => [...prevMarkets, newMarket]);
+  };
+
+  const handleUkuranBotolAdded = (newukuranBotol: UkuranBotol) => {
+    setukuranBotol((prevUkuranbotol) => [...prevUkuranbotol, newukuranBotol]);
   };
   
   const handleBarangMasukAdded = (newBarangMasuk: BarangMasuk) => {
@@ -138,6 +151,10 @@ function App() {
   useEffect(() => {
     console.log("Current markets:", markets);
   }, [markets]);
+
+  useEffect(() => {
+    console.log("Current Ukuran botol:", ukuranBotol);
+  }, [ukuranBotol]);
 
   useEffect(() => {
     console.log("Current supplies:", supplies);
@@ -234,8 +251,16 @@ function App() {
         <Route path="form-input-barang-masuk" element={<><PageTitle title="Input Barang Masuk" /><FormInputBarangMasuk supplies={supplies} onBarangMasukAdded={handleBarangMasukAdded} /></>} />
         <Route path="form-edit-barang-masuk/:id" element={<><PageTitle title="Edit Barang Masuk" /><FormEditBarangMasuk /></>} />
 
+        {/* Ukuran Botol Routes */}
+        <Route path="form-ukuran-botol" element={<><PageTitle title="Ukuran Botol" /><FormUkuranBotol /></>} />
+        <Route path="form-input-ukuran-botol" element={<><PageTitle title="Input Barang Masuk" /><FormInputUkuranBotol  onUkuranBotolAdded={handleUkuranBotolAdded} /></>} />
+        <Route path="form-edit-ukuran-botol/:id" element={<><PageTitle title="Edit Barang Masuk" /><FormEditUkuranBotol /></>} />
+
         {/* Stok Produk Routes */}
         <Route path="form-stockproduk" element={<><PageTitle title="Stok Produk" /><FormStock /></>} />
+
+        {/* Stok Gudang */}
+        <Route path="form-stock-gudang" element={<><PageTitle title="Stok Gudang" /><FormStokGudang /></>} />
       </Route>
     </Routes>
   </AuthProvider>

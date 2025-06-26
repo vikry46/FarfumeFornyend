@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
-import axios from "axios";
+import axios from "../../../utils/axiosInstance";
 import React, { useState, useEffect } from "react";
 
 
@@ -35,8 +35,8 @@ const FormEditBarangMasuk = () => {
     const fetchAllData = async () => {
       try {
         const [barangMasukRes, supplieRes] = await Promise.all([
-          axios.get(`http://localhost:8000/api/barang-masuk/show/${id}`),
-          axios.get("http://localhost:8000/api/supllies"),
+          axios.get(`/api/barang-masuk/show/${id}`),
+          axios.get("/api/supllies"),
         ]);
 
         console.log('BarangMasuk Response:', barangMasukRes.data);

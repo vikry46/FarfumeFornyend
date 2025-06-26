@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axios from '../../../utils/axiosInstance';
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import FormPenjualanBody from "./FormPenjualanBody";
 
@@ -33,7 +33,7 @@ const FormPenjualan = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios('http://localhost:8000/api/penjualan')
+      const response = await axios('/api/penjualan')
       setPenjualanList(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -51,7 +51,7 @@ const FormPenjualan = () => {
     if (!window.confirm("Apa anda yakin ingin menghapus data ini? Pastikan lagi sebelum menghapus!!!.")) return;
 
     try {
-      await axios.delete(`http://localhost:8000/api/penjualan/delete/${id}`);
+      await axios.delete(`/api/penjualan/delete/${id}`);
       setPenjualanList((prev) => prev.filter((item) => item.id !== id));
       alert("Data Berhasil dihapus.");
     } catch (error) {

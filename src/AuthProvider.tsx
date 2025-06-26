@@ -107,7 +107,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
       const checkAuthStatus = async () => {
         try {
-          const response = await fetch('http://localhost:8000/api/user', {
+          const response = await fetch('http://localhost:8000/api/users', {
             credentials: 'include',
             headers: {
               Accept: 'application/json',

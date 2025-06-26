@@ -1,6 +1,6 @@
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../../../utils/axiosInstance';
 import FormSuppliesBody from './FormSuppliesBody';
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -30,7 +30,7 @@ const FormSupplies =() =>{
       return;
     }
     try{
-      await axios.delete(`http://127.0.0.1:8000/api/suplly/delete/${id}`)
+      await axios.delete(`/api/suplly/delete/${id}`)
       setSupplies((prevSupplies)=> prevSupplies.filter((supplies)=>supplies.id !==id));
       alert("Data Berhasil di hapus.");
     } catch (error){
@@ -41,7 +41,7 @@ const FormSupplies =() =>{
 
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/supllies')
+    axios.get('/api/supllies')
       .then((response) => {
         const supplie = response.data.data;
         setSupplies(supplie);
