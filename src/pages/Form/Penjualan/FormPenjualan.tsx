@@ -29,11 +29,13 @@ const FormPenjualan = () => {
   const [searchTanggal, setSearchTanggal] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [exportType, setExportType] = useState('harian');
+  const [exportDate, setExportDate] = useState('');
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios('/api/penjualan')
+      const response = await axios('/api/penjualan');
       setPenjualanList(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -60,13 +62,35 @@ const FormPenjualan = () => {
     }
   };
 
+  
+  const handleExport = async () => {
+    try {
+    const response = await axios.get(`/api/export-penjualan?type=${exportType}&date=${exportDate}`, {
+      responseType: 'blob',
+    });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'penjualan.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Gagal export Excel:", error);
+      alert("Gagal export Excel!");
+    }
+  };
+
   const filteredPenjualan = penjualanList.filter((item) => {
     const matchMarket = item.market?.nama?.toLowerCase().includes(searchMarket.toLowerCase());
     const matchTanggal = item.tanggal.includes(searchTanggal);
     return matchMarket && matchTanggal;
   });
+
   if (loading) return <div className="text-center py-8">Memuat data...</div>;
   if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
+
   return (
     <>
       <Breadcrumb pageName="Form Penjualan" />
@@ -74,12 +98,32 @@ const FormPenjualan = () => {
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark flex justify-between items-center">
             <h3 className="text-black dark:text-white text-lg font-medium">Data Penjualan</h3>
-            <Link
-              to="/form-input-penjualan"
-              className="rounded border border-stroke py-2 px-4 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-primary"
-            >
-              Tambah Data
-            </Link>
+            <div className="flex gap-2">
+              <Link
+                to="/form-input-penjualan"
+                className="rounded border border-stroke py-2 px-4 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-primary"
+              >
+                Tambah Data
+              </Link>
+                <select
+                  value={exportType}
+                  onChange={(e) => setExportType(e.target.value)}
+                  className="border px-3 py-2"
+                >
+                  <option value="harian">Harian</option>
+                  <option value="mingguan">Mingguan</option>
+                  <option value="bulanan">Bulanan</option>
+                </select>
+
+                <input
+                  type="date"
+                  value={exportDate}
+                  onChange={(e) => setExportDate(e.target.value)}
+                  className="border px-3 py-2"
+                />
+
+                <button onClick={handleExport} className="border px-4 py-2">Export Excel</button>
+            </div>
           </div>
 
           {/* Pencarian */}

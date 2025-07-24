@@ -43,6 +43,14 @@ import FormUkuranBotol from './pages/Form/UkuranBotol/FormUkuranBotol';
 import FormInputUkuranBotol from './pages/Form/UkuranBotol/FormInputUkuranBotol';
 import FormEditUkuranBotol from './pages/Form/UkuranBotol/FormEditUkuranBotol';
 import FormStokGudang from './pages/Form/Gudang/FormStokGudang';
+import Gudang from './Grafik/Gudang';
+import GrafikPenjualanProduk from './Grafik/GrafikPenjualanProduk';
+import HalamanGrafikPengiriman from './Grafik/HalamanGrafikPengiriman';
+import HalamanGrafikStokMarket from './Grafik/HalamanGrafikStokMarket'
+import RoleManagementPage from './pages/Role/RoleManagementPage';
+import RoleForm from './pages/Form/Role/RoleForm';
+import FormInputRole from './pages/Form/Role/FormInputRole';
+import FormEditRole from './pages/Form/Role/FormEditRole';
 
 interface Market {
   id: number;
@@ -261,6 +269,21 @@ function App() {
 
         {/* Stok Gudang */}
         <Route path="form-stock-gudang" element={<><PageTitle title="Stok Gudang" /><FormStokGudang /></>} />
+
+         {/* grafik gudang */}
+        <Route path="form-grafik-gudang" element={<><PageTitle title="grafik Gudang" /><Gudang /></>} />
+        <Route path="form-grafik-penjualan" element={<><PageTitle title="grafik penjualan" /><GrafikPenjualanProduk /></>} />
+        <Route path="form-grafik-pengiriman" element={<><PageTitle title="grafik pengiriman" /><HalamanGrafikPengiriman/></>} />
+        <Route path="form-grafik-market" element={<><PageTitle title="Stok Market" /><HalamanGrafikStokMarket /></>} />
+
+        {/* Role */}
+        <Route path="/Roles" element={<RoleManagementPage />} />
+        <Route path="form-role" element={<><PageTitle title="Role akses" /><RoleForm/></>} />
+        <Route path="form-input-role" element={<><PageTitle title="Role input akses" /><FormInputRole/></>} />
+        <Route path="form-edit-role/:id" element={<><PageTitle title="Role edit akses" /><FormEditRole/></>} />
+
+         {/* Permission */}
+         
       </Route>
     </Routes>
   </AuthProvider>
@@ -268,3 +291,4 @@ function App() {
 }
 
 export default App;
+

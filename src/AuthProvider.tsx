@@ -19,35 +19,28 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Loading state untuk cek initial auth
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fungsi untuk mendapatkan cookie
+  // Ambil cookie
   const getCookie = (name: string): string | undefined => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return decodeURIComponent(parts.pop()!.split(';').shift()!);
   };
 
-  // Fungsi login
+  // Login
   const login = async (email: string, password: string) => {
     try {
-      // 1. Ambil CSRF cookie dari Sanctum
-      const csrfResponse = await fetch('http://localhost:8000/sanctum/csrf-cookie', {
+      await fetch('http://localhost:8000/sanctum/csrf-cookie', {
         credentials: 'include',
       });
 
-      if (!csrfResponse.ok) {
-        throw new Error('Gagal mendapatkan CSRF token');
-      }
-
-      // 2. Ambil token XSRF dari cookie
       const xsrfToken = getCookie('XSRF-TOKEN');
       if (!xsrfToken) {
         throw new Error('CSRF token tidak ditemukan');
       }
 
-      // 3. Kirim permintaan login
       const loginResponse = await fetch('http://localhost:8000/api/login', {
         method: 'POST',
         headers: {
@@ -65,14 +58,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(data.message || 'Login gagal. Cek email dan password.');
       }
 
-      // 4. Simpan user dan token ke localStorage dan state
-      sessionStorage.setItem('user', JSON.stringify(data.user));
-      sessionStorage.setItem('token', 'authenticated'); // Simple token indicator
-      setUser(data.user);
-      
+      // ✅ Cek ulang user dari endpoint /api/user
+      await checkAuthStatus();
+
       console.log('Login berhasil! Redirecting to dashboard...');
-      
-      // 5. Navigate ke dashboard
       navigate('/', { replace: true });
 
     } catch (error) {
@@ -81,90 +70,59 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Fungsi logout
+  // Logout
   const logout = async () => {
     try {
-      // Panggil logout endpoint di Laravel
+      const xsrfToken = getCookie('XSRF-TOKEN');
       await fetch('http://localhost:8000/api/logout', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
+          'X-XSRF-TOKEN': xsrfToken || '',
         },
         credentials: 'include',
       });
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      // Hapus data lokal dan redirect
       sessionStorage.removeItem('user');
-      sessionStorage.removeItem('token');
       setUser(null);
       navigate('/auth/signin');
     }
   };
 
-  // Cek status login saat komponen pertama kali render
-    useEffect(() => {
-      const checkAuthStatus = async () => {
-        try {
-          const response = await fetch('http://localhost:8000/api/users', {
-            credentials: 'include',
-            headers: {
-              Accept: 'application/json',
-            },
-          });
+  // ✅ Cek status login saat komponen pertama kali render
+  const checkAuthStatus = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/user', {
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      });
 
-          if (!response.ok) {
-            throw new Error('Unauthorized');
-          }
+      if (!response.ok) {
+        throw new Error('Unauthorized');
+      }
 
-          const userData = await response.json();
-          setUser(userData);
-          sessionStorage.setItem('user', JSON.stringify(userData));
-          sessionStorage.setItem('token', 'authenticated');
-        } catch (error) {
-          console.error('Auth check failed:', error);
-          sessionStorage.removeItem('user');
-          sessionStorage.removeItem('token');
-          setUser(null);
-          navigate('/auth/signin');
-        } finally {
-          setIsLoading(false);
-        }
-      };
+      const userData = await response.json();
+      setUser(userData);
+      sessionStorage.setItem('user', JSON.stringify(userData));
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      sessionStorage.removeItem('user');
+      setUser(null);
+      // Redirect hanya jika bukan di halaman login
+      if (window.location.pathname !== '/auth/signin') {
+        navigate('/auth/signin');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      // Event listener untuk clear session saat browser ditutup
-      const handleBeforeUnload = async () => {
-        try {
-          // Panggil logout API untuk clear session di server
-          await fetch('http://localhost:8000/api/logout', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              Accept: 'application/json',
-            },
-          });
-        } catch (error) {
-          console.error('Auto logout error:', error);
-        }
-        
-        // Clear session storage
-        sessionStorage.clear();
-      };
-
-      // Tambahkan event listeners
-      window.addEventListener('beforeunload', handleBeforeUnload);
-      window.addEventListener('unload', handleBeforeUnload);
-
-      checkAuthStatus();
-
-      // Cleanup
-      return () => {
-        window.removeEventListener('beforeunload', handleBeforeUnload);
-        window.removeEventListener('unload', handleBeforeUnload);
-      };
-    }, []);
-
+  useEffect(() => {
+    checkAuthStatus();
+    //  Tidak ada handleBeforeUnload — biarkan session Laravel awet
+  }, []);
 
   const value = {
     user,

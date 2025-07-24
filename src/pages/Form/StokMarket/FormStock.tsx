@@ -14,7 +14,7 @@ const FormStock = () => {
   const [searchToko, setSearchToko] = useState('');
   const [searchBarang, setSearchBarang] = useState('');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);      
 
   const fetchData = async () => {
     try {
@@ -86,6 +86,7 @@ const FormStock = () => {
                     {filteredStock.length > 0 ? (
                       filteredStock.map((item, index) => (
                         <FormStockBody
+                          key={`${item.toko}-${item.barang}`}
                           produk={item}
                           index={index}
                         />
