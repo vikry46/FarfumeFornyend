@@ -51,6 +51,9 @@ import RoleManagementPage from './pages/Role/RoleManagementPage';
 import RoleForm from './pages/Form/Role/RoleForm';
 import FormInputRole from './pages/Form/Role/FormInputRole';
 import FormEditRole from './pages/Form/Role/FormEditRole';
+import UserIndex from './pages/Form/User/UserIndex';
+import FormInputUser from './pages/Form/User/FormInputUser';
+import FormEditUser from './pages/Form/User/FormEditUser';
 
 interface Market {
   id: number;
@@ -282,8 +285,10 @@ function App() {
         <Route path="form-input-role" element={<><PageTitle title="Role input akses" /><FormInputRole/></>} />
         <Route path="form-edit-role/:id" element={<><PageTitle title="Role edit akses" /><FormEditRole/></>} />
 
-         {/* Permission */}
-         
+         {/* user */}
+        <Route path="form-user" element={<><PageTitle title="User" /><UserIndex/></>} />
+        <Route path="form-input-user" element={<><PageTitle title="user input" /><FormInputUser/></>} />
+        <Route path="form-edit-user/:id" element={<><PageTitle title="user input" /><FormEditUser/></>} />
       </Route>
     </Routes>
   </AuthProvider>
